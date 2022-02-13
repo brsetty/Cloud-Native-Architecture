@@ -1,3 +1,5 @@
+go:
+	go run webserver.go
 list:
 	curl "http://localhost:8000/list"
 
