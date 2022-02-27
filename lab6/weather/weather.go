@@ -102,7 +102,7 @@ func ParseResponse(data []byte) (Conditions, error) {
 		Humidity: resp.Main.Humidity,
 		Speed:    resp.Wind.Speed,
 	}
-	//fmt.Printf("%s %.1fº\n%d %d %f", conditions.Summary, conditions.Temperature.Celcius(), conditions.pressure, conditions.humidity, conditions.speed)
+	fmt.Printf("%s %.1fº\n%d %d %f", conditions.Summary, conditions.Temperature.Celcius(), conditions.Pressure, conditions.Humidity, conditions.Speed)
 
 	return conditions, nil
 }

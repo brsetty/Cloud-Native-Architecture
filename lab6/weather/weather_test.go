@@ -1,4 +1,4 @@
-package weather_test
+package weather
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
-	"weather"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -18,14 +17,14 @@ func TestParseResponse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := weather.Conditions{
+	want := Conditions{
 		Summary:     "Clouds",
 		Temperature: 281.33,
 		Pressure:    1000,
 		Humidity:    90,
 		Speed:       3.09,
 	}
-	got, err := weather.ParseResponse(data)
+	got, err := ParseResponse(data)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +35,7 @@ func TestParseResponse(t *testing.T) {
 
 func TestParseResponseEmpty(t *testing.T) {
 	t.Parallel()
-	_, err := weather.ParseResponse([]byte{})
+	_, err := ParseResponse([]byte{})
 	if err == nil {
 		t.Fatal("want error parsing empty response, got nil")
 	}
@@ -48,7 +47,7 @@ func TestParseResponseInvalid(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = weather.ParseResponse(data)
+	_, err = ParseResponse(data)
 	if err == nil {
 		t.Fatal("want error parsing invalid response, got nil")
 	}
@@ -56,7 +55,7 @@ func TestParseResponseInvalid(t *testing.T) {
 
 func TestFormatURL(t *testing.T) {
 	t.Parallel()
-	c := weather.NewClient("dummyAPIKey")
+	c := NewClient("dummyAPIKey")
 	location := "Paris,FR"
 	want := "https://api.openweathermap.org/data/2.5/weather?q=Paris%2CFR&appid=dummyAPIKey"
 	got := c.FormatURL(location)
@@ -67,7 +66,7 @@ func TestFormatURL(t *testing.T) {
 
 func TestFormatURLSpaces(t *testing.T) {
 	t.Parallel()
-	c := weather.NewClient("dummyAPIKey")
+	c := NewClient("dummyAPIKey")
 	location := "Wagga Wagga,AU"
 	want := "https://api.openweathermap.org/data/2.5/weather?q=Wagga+Wagga%2CAU&appid=dummyAPIKey"
 	got := c.FormatURL(location)
@@ -106,10 +105,10 @@ func TestGetWeather(t *testing.T) {
 		io.Copy(w, f)
 	}))
 	defer ts.Close()
-	c := weather.NewClient("dummyAPIkey")
+	c := NewClient("dummyAPIkey")
 	c.BaseURL = ts.URL
 	c.HTTPClient = ts.Client()
-	want := weather.Conditions{
+	want := Conditions{
 		Summary:     "Clouds",
 		Temperature: 281.33,
 		Pressure:    1000,
@@ -127,7 +126,7 @@ func TestGetWeather(t *testing.T) {
 
 func TestCelcius(t *testing.T) {
 	t.Parallel()
-	input := weather.Temperature(274.15)
+	input := Temperature(274.15)
 	want := 1.0
 	got := input.Celcius()
 	if !cmp.Equal(want, got) {
