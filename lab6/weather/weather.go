@@ -13,25 +13,26 @@ import (
 type Temperature float64
 
 func (t Temperature) Celcius() float64 {
-	return float64(t) - 273.15
+	return ((float64(t) - 273.15) * 1.8) + 32
 }
 
+// adding pressure, humidity and speed.
 type Conditions struct {
 	Summary     string
 	Temperature Temperature
-
-	Pressure int
-	Humidity int
-	Speed    float64
+	Pressure    int
+	Humidity    int
+	Speed       float64
 }
 
+//pressure and humidity are in main structure
+//speed is in wind
 type OWMResponse struct {
 	Weather []struct {
 		Main string
 	}
 	Main struct {
-		Temp Temperature
-
+		Temp     Temperature
 		Pressure int
 		Humidity int
 	}
@@ -102,12 +103,6 @@ func ParseResponse(data []byte) (Conditions, error) {
 		Humidity: resp.Main.Humidity,
 		Speed:    resp.Wind.Speed,
 	}
-	//fmt.Printf("%s %.1fº\n%d %d %f", conditions.Summary, conditions.Temperature.Celcius(), conditions.Pressure, conditions.Humidity, conditions.Speed)
-	fmt.Printf("Weather Summary : %s\n", conditions.Summary)
-	fmt.Printf("Temperature now : %.1fº\n", conditions.Temperature.Celcius())
-	fmt.Printf("Pressure  : %d\n", conditions.Pressure)
-	fmt.Printf("Humidity : %d\n", conditions.Humidity)
-	fmt.Printf("Speeds : %f\n", conditions.Speed)
 
 	return conditions, nil
 }
@@ -141,11 +136,12 @@ func RunCLI() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	//printing all the data.
+	fmt.Printf("Welcome to the Weather App !! The weather in %s is \n", location)
 	fmt.Printf("Weather Summary : %s\n", conditions.Summary)
 	fmt.Printf("Temperature now : %.1fº\n", conditions.Temperature.Celcius())
 	fmt.Printf("Pressure  : %d\n", conditions.Pressure)
 	fmt.Printf("Humidity : %d\n", conditions.Humidity)
 	fmt.Printf("Speeds : %f\n", conditions.Speed)
 
-	//1fº\n%d %d %f", conditions.Summary, conditions.Temperature.Celcius(), conditions.Pressure, conditions.Humidity, conditions.Speed)
 }
