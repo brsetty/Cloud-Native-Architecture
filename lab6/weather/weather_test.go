@@ -127,7 +127,7 @@ func TestGetWeather(t *testing.T) {
 func TestCelcius(t *testing.T) {
 	t.Parallel()
 	input := Temperature(274.15)
-	want := 1.0
+	want := 33.8
 	got := input.Celcius()
 	if !cmp.Equal(want, got) {
 		t.Error(cmp.Diff(want, got))
