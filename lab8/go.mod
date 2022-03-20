@@ -1,0 +1,10 @@
+module grpc
+
+go 1.16
+
+require (
+	github.com/golang/protobuf v1.4.3
+	go.mongodb.org/mongo-driver v1.8.4 // indirect
+	google.golang.org/grpc v1.36.0
+	google.golang.org/protobuf v1.25.0
+)
