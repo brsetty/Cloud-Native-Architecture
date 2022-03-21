@@ -8,15 +8,16 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
-	mongodbEndpoint = "mongodb://127.0.0.1:27017" // Find this from the Mongo container
+	mongodbEndpoint = "mongodb://172.17.0.2:27017" // Find this from the Mongo container
 )
 
-/*type Post struct {
+type Post struct {
 	ID        primitive.ObjectID `bson:"_id"`
 	Title     string             `bson:"title"`
 	Body      string             `bson:"body"`
@@ -24,10 +25,6 @@ const (
 	Comments  uint64             `bson:"comments"`
 	CreatedAt time.Time          `bson:"created_at"`
 	UpdatedAt time.Time          `bson:"updated_at"`
-}*/
-type Post struct {
-	Item  string  `bson:"item"`
-	Price float64 `bson:"price"`
 }
 
 func main() {
@@ -46,20 +43,23 @@ func main() {
 	defer client.Disconnect(ctx)
 
 	// select collection from database
-	col := client.Database("shop").Collection("stock")
-	filter := bson.M{"item": bson.M{"$elemMatch": bson.M{"$eq": "shoes"}}}
+	col := client.Database("blog").Collection("posts")
+	filter := bson.M{"tags": bson.M{"$elemMatch": bson.M{"$eq": "mongodb"}}}
 	var p Post
 	result := col.FindOne(ctx, filter).Decode(&p)
 	fmt.Printf("%v \n", result)
 	// Insert one
 	res, err := col.InsertOne(ctx, &Post{
-		Item:  "shoes",
-		Price: 100.50,
+		ID:        primitive.NewObjectID(),
+		Title:     "post",
+		Tags:      []string{"mongodb"},
+		Body:      `MongoDB is a NoSQL database`,
+		CreatedAt: time.Now(),
 	})
 	checkError(err)
-	fmt.Printf("inserted item: %s\n", res.InsertedID)
+	fmt.Printf("inserted id: %s\n", res.InsertedID.(primitive.ObjectID).Hex())
 
-	// filter posts tagged as mongod
+	// filter posts tagged as mongodb
 	// filter := bson.M{"tags": bson.M{"$elemMatch": bson.M{"$eq": "mongodb"}}}
 
 	// find one document
